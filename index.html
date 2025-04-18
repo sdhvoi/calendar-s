@@ -1,0 +1,67 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>任务总览 - sdhvoigpt2025</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/modern-css-reset/dist/reset.min.css" />
+  <style>
+    body {
+      font-family: "Helvetica Neue", sans-serif;
+      background-color: #fdfdfd;
+      color: #333;
+      padding: 2rem;
+      max-width: 600px;
+      margin: auto;
+    }
+    h1 {
+      color: #8a5c7b;
+      font-size: 1.8rem;
+    }
+    .task {
+      margin-top: 1rem;
+      padding: 1rem;
+      background: #f0e9f1;
+      border-radius: 12px;
+      box-shadow: 0 0 5px rgba(0,0,0,0.1);
+    }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+</head>
+<body>
+  <h1>任务总览</h1>
+  <p>正在加载你的待办事项...</p>
+  <div id="task-list"></div>
+
+  <script>
+    const supabaseUrl = "https://YOUR_PROJECT.supabase.co"; // 替换为你的 Supabase 项目地址
+    const supabaseKey = "YOUR_PUBLIC_ANON_KEY"; // 替换为你的 anon key
+    const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+
+    async function loadTasks() {
+      const { data, error } = await supabase
+        .from('tasks')
+        .select('*')
+        .eq('owner_id', 'sdhvoigpt2025');
+
+      const taskList = document.getElementById('task-list');
+      if (error) {
+        taskList.innerHTML = '<p>加载失败，请检查配置。</p>';
+        console.error(error);
+        return;
+      }
+
+      if (data.length === 0) {
+        taskList.innerHTML = '<p>今天没有任务哦！</p>';
+      } else {
+        taskList.innerHTML = data.map(task => 
+          `<div class="task"><strong>${task.title}</strong><br/>截止：${task.due_date}</div>`
+        ).join('');
+      }
+    }
+
+    loadTasks();
+  </script>
+</body>
+</html>
